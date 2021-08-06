@@ -130,3 +130,4 @@ oc adm policy add-scc-to-user privileged -z default -n ${PROJECT_NAME} && \
 oc adm policy add-scc-to-user anyuid -z default -n ${PROJECT_NAME}
 ```
 
+
