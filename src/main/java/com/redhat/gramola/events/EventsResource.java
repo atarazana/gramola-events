@@ -28,6 +28,16 @@ public class EventsResource {
     @ConfigProperty(name = "gramola.welcome-message", defaultValue = "Welcome")
     String welcome;
 
+    @ConfigProperty(name = "info.name", defaultValue = "gramola-events")
+    String infoName;
+
+    @GET
+    @Path("info/name")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String infoName() {
+        return infoName;
+    }
+
     @GET
     @Path("welcome")
     @Produces(MediaType.TEXT_PLAIN)
