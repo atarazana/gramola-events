@@ -47,13 +47,13 @@ public class EventsResource {
     }
 
     @GET
-    @Path("/")
+    @Path("")
     public List<Event> allEvents() {
         return Event.listAll(); 
     }
 
     @POST
-    @Path("/")
+    @Path("")
     @Transactional
     public Response saveEvent(Event Event) {
         // since the EventEntity is a panache entity
@@ -66,7 +66,7 @@ public class EventsResource {
     }
 
     @GET
-    @Path("/{country}/{city}")
+    @Path("{country}/{city}")
     public List<Event> eventsByCountryAndCity(@PathParam("country") String country, @PathParam("city") String city) {
         return Event.findEventsByCountryAndCity(country, city);
     }
