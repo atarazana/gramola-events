@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 @Path("/images")
@@ -21,6 +22,9 @@ import org.jboss.logging.Logger;
 public class ImagesResource {
     Logger logger = Logger.getLogger(ImagesResource.class);
 
+    @ConfigProperty(name = "gramola.images-folder", defaultValue = "/data/images")
+    String imagesFolder;
+    
     // @GET
     // @Path("{fileName}")
     // @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -38,13 +42,13 @@ public class ImagesResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getFile(@PathParam("fileName") String fileName) {
         logger.debug("Download file " + fileName);
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL resource = classLoader.getResource("images" + File.separator + fileName);
-        if (resource == null) {
-            throw new IllegalArgumentException("File "+ fileName + " not found!");
-        }
-        // File fileDownload = new File("/tmp/images"+ File.separator + fileName);
-        File fileDownload = new File(resource.getFile());
+        // ClassLoader classLoader = getClass().getClassLoader();
+        // URL resource = classLoader.getResource("images" + File.separator + fileName);
+        // if (resource == null) {
+        //     throw new IllegalArgumentException("File "+ fileName + " not found!");
+        // }
+        File fileDownload = new File(imagesFolder + File.separator + fileName);
+        // File fileDownload = new File(resource.getFile());
         ResponseBuilder response = Response.ok((Object) fileDownload);
         response.header("Content-Disposition", "attachment;filename=" + fileName);
         return response.build();
