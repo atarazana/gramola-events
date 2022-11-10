@@ -12,10 +12,10 @@ public class EventsResourceTest {
     @Test
     public void testHelloEndpoint() {
         given()
-          .when().get("/events")
+          .when().get("/events/welcome")
           .then()
              .statusCode(200)
-             .body(is("Hello RESTEasy"));
+             .body(is("Welcome"));
     }
 
 }
