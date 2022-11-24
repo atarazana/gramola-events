@@ -1,0 +1,149 @@
+schemaVersion: 2.1.0
+metadata:
+  name: gramola-events
+  namespace: cvicensa-dev
+attributes:
+  .che/che-theia-plugins.yaml: |
+    - id: redhat/quarkus-java11/latest
+      override:
+        sidecar: {}
+    - id: redhat/vscode-yaml/latest
+      override:
+        sidecar: {}
+    - id: vscode/typescript-language-features/latest
+      override:
+        sidecar: {}
+    - id: redhat/vscode-xml/latest
+      override:
+        sidecar: {}
+    - id: redhat/java/latest
+      override:
+        sidecar: {}
+  .vscode/extensions.json: |-
+    {
+      "recommendations": [
+        "redhat/quarkus-java11",
+        "redhat/vscode-yaml",
+        "vscode/typescript-language-features",
+        "redhat/vscode-xml",
+        "redhat/java"
+      ]
+    }
+  .vscode/launch.json: |
+    {
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "type": "java",
+          "request": "attach",
+          "name": "Attach to App",
+          "hostName": "localhost",
+          "port": 5005
+        }
+      ]
+    }
+  controller.devfile.io/devworkspace-config:
+    name: devworkspace-config
+    namespace: crw
+  controller.devfile.io/storage-type: common
+  metadata-name-field: generateName
+  metadata-name-original-value: gramola-events-
+projects:
+  - git:
+      remotes:
+        origin: 'https://github.com/atarazana/gramola-events.git'
+    name: gramola-events
+components:
+  - attributes:
+      app.kubernetes.io/name: quarkus-tools
+      che-theia.eclipse.org/vscode-extensions:
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-quarkus-1.7.0-437.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v069c634/vscode-xml-0.17.0.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-microprofile-0.1.1-48.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix'
+        - 'http://plugin-registry.crw.svc:8080/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix'
+      che-theia.eclipse.org/vscode-preferences:
+        java.server.launchMode: Standard
+    container:
+      args:
+        - sh
+        - '-c'
+        - '${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}'
+      endpoints:
+        - attributes:
+            discoverable: 'true'
+            protocol: http
+            public: 'true'
+          exposure: public
+          name: web-ui
+          protocol: http
+          targetPort: 8080
+        - attributes:
+            discoverable: 'false'
+            protocol: jdwp
+            public: 'false'
+          exposure: internal
+          name: debug
+          protocol: http
+          targetPort: 5005
+      env:
+        - name: MAVEN_OPTS
+          value: '-Xmx6G -Xss128M -XX:MetaspaceSize=1G -XX:MaxMetaspaceSize=2G -XX:+CMSClassUnloadingEnabled'
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: THEIA_PLUGINS
+          value: 'local-dir:///plugins/sidecars/quarkus-tools'
+        - name: CHE_DASHBOARD_URL
+          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com'
+        - name: CHE_PLUGIN_REGISTRY_URL
+          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com/plugin-registry/v3'
+        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
+          value: 'http://plugin-registry.crw.svc:8080/v3'
+      image: 'quay.io/atarazana/quarkus-stack:2.7-5'
+      memoryLimit: 8Gi
+      mountSources: true
+      sourceMapping: /projects
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+        - name: remote-endpoint
+          path: /remote-endpoint
+        - name: plugins
+          path: /plugins
+    name: quarkus-tools
+  - name: m2
+    volume: {}
+commands:
+  - exec:
+      commandLine: 'oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true -u ${CHE_WORKSPACE_NAMESPACE}'
+      component: quarkus-tools
+      label: Login to OpenShift
+      workingDir: '${PROJECTS_ROOT}'
+    id: login-to-openshift
+  - exec:
+      commandLine: 'mvn verify -f ${PROJECTS_ROOT}/atomic-fruit-service'
+      component: quarkus-tools
+      label: Run Tests
+      workingDir: '${PROJECTS_ROOT}'
+    id: run-tests
+  - exec:
+      commandLine: 'mvn clean compile quarkus:dev -f ${PROJECTS_ROOT}/atomic-fruit-service'
+      component: quarkus-tools
+      label: Start Live Coding
+      workingDir: '${PROJECTS_ROOT}'
+    id: start-live-coding
+  - exec:
+      commandLine: 'mvn package -DuberJar=true -DskipTests -f ${PROJECTS_ROOT}/atomic-fruit-service'
+      component: quarkus-tools
+      label: Package App for OpenShift
+      workingDir: '${PROJECTS_ROOT}'
+    id: package-app-for-openshift
+  - exec:
+      commandLine: 'mvn package -Pnative -DskipTests -Dquarkus.package.uber-jar=false -f ${PROJECTS_ROOT}/atomic-fruit-service'
+      component: quarkus-tools
+      label: Build Native App
+      workingDir: '${PROJECTS_ROOT}'
+    id: build-native-app
