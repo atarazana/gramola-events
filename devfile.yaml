@@ -1,7 +1,6 @@
 schemaVersion: 2.1.0
 metadata:
   name: gramola-events
-  namespace: cvicensa-dev
 attributes:
   .che/che-theia-plugins.yaml: |
     - id: redhat/quarkus-java11/latest
