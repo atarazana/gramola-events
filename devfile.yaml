@@ -1,6 +1,7 @@
 schemaVersion: 2.1.0
 metadata:
   name: gramola-events
+  namespace: opentlc-mgr-devspaces
 attributes:
   .che/che-theia-plugins.yaml: |
     - id: redhat/quarkus-java11/latest
@@ -43,7 +44,7 @@ attributes:
     }
   controller.devfile.io/devworkspace-config:
     name: devworkspace-config
-    namespace: crw
+    namespace: openshift-storage
   controller.devfile.io/storage-type: common
   metadata-name-field: generateName
   metadata-name-original-value: gramola-events-
@@ -56,14 +57,14 @@ components:
   - attributes:
       app.kubernetes.io/name: quarkus-tools
       che-theia.eclipse.org/vscode-extensions:
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-quarkus-1.7.0-437.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v069c634/vscode-xml-0.17.0.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-microprofile-0.1.1-48.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix'
-        - 'http://plugin-registry.crw.svc:8080/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-quarkus-1.7.0-437.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v069c634/vscode-xml-0.17.0.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-microprofile-0.1.1-48.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix'
+        - 'http://plugin-registry.openshift-storage.svc:8080/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix'
       che-theia.eclipse.org/vscode-preferences:
         java.server.launchMode: Standard
     container:
@@ -95,14 +96,18 @@ components:
           value: /remote-endpoint/plugin-remote-endpoint
         - name: THEIA_PLUGINS
           value: 'local-dir:///plugins/sidecars/quarkus-tools'
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: THEIA_PLUGINS
+          value: 'local-dir:///plugins/sidecars/quarkus-tools'
         - name: CHE_DASHBOARD_URL
-          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com'
+          value: 'https://devspaces.apps.cluster-xsjzq.xsjzq.sandbox278.opentlc.com'
         - name: CHE_PLUGIN_REGISTRY_URL
-          value: 'https://devspaces.apps.sandbox-m2.ll9k.p1.openshiftapps.com/plugin-registry/v3'
+          value: 'https://devspaces.apps.cluster-xsjzq.xsjzq.sandbox278.opentlc.com/plugin-registry/v3'
         - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
-          value: 'http://plugin-registry.crw.svc:8080/v3'
+          value: 'http://plugin-registry.openshift-storage.svc:8080/v3'
       image: 'quay.io/atarazana/quarkus-stack:2.7-5'
-      memoryLimit: 8Gi
+      memoryLimit: 6Gi
       mountSources: true
       sourceMapping: /projects
       volumeMounts:
